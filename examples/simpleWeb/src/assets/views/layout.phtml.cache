@@ -1,0 +1,14 @@
+<?php /* //@ARGS _content, title */ $_content = @$_context['_content']; $title = @$_context['title'];
+echo '<html>
+	<head>
+		<title>', $title, '</title>
+	</head>
+  <body>
+
+    <div id="main-content">
+		', $_content, '
+    </div>
+
+  </body>
+</html>';
+ ?>

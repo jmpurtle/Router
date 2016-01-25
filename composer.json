@@ -1,0 +1,17 @@
+{
+    "name": "magnus/router",
+    "description": "Routers for a modular framework.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "John Mark Purtle",
+            "email": "purtlejohnmark@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Magnus\\": "./Magnus"
+        }
+    }
+}

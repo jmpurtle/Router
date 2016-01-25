@@ -1,0 +1,5 @@
+<?php echo '<?php //@ARGS games ?>
+'; echo $_context['_engine']->import(':listHelper', $_context); 
+echo '<?php $data = $games; ?>
+';echo _decode_params(genericList(array('id' => 'superBowlGameList'), '{==$listItem['game']=}'));
+ ?>

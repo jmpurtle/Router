@@ -1,0 +1,13 @@
+<?PHP function genericList($listAttributes, $rowTemplate, $headerTemplate = '') { ?>
+	<div 
+		<?PHP foreach ($listAttributes as $attribute => $value) { ?>
+			{*==$attribute=*}="{*==$value=*}"
+		<?PHP } ?>
+	>
+		<ul>
+			<?php foreach ($data as $listItem) { ?>
+				<li><?PHP echo $rowTemplate; ?></li>
+			<?php } ?>
+		</ul>
+	</div>
+<?PHP } ?>

@@ -1,0 +1,21 @@
+<?php //@ARGS _content, title, context ?>
+<html>
+	<head>
+		<title>Super Bowl Demo</title>
+		<link rel="stylesheet" type="text/css" href="{==$context->getAssetRoot()=}/css/Magnus.css">
+	</head>
+	<header>
+		<nav>
+			<a class="siteHomeNav" href="{==$context->getBaseURI()=}">Home</a>
+			<a href="{==$context->getBaseURI()=}/superbowl">Games</a>
+		</nav>
+	</header>
+	<body>
+		<div id="siteContainer">
+			<div id="main-content">
+				{==$_content=}
+			</div>
+		</div>
+		<script src="{==$context->getAssetRoot()=}/js/Magnus.js"></script>
+	</body>
+</html>

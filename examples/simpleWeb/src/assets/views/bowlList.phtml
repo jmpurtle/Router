@@ -1,0 +1,14 @@
+<?php //@ARGS games, context ?>
+<?PHP import(':listHelper'); ?>
+<?php $data = $games;?>
+{*==genericList(
+	array('id' => 'superBowlGameList'),
+	'<a href="{==$context->getBaseURI()=}/superbowl/{==$listItem[\'gameID\']=}">
+		<div class="bowlListRowHeader">
+			Super Bowl {==$listItem["game"]=} - {==$listItem["winner"]=} VS. {==$listItem["loser"]=}
+	 	</div>
+	 </a>
+	 <div class="bowlListRowBody">
+		At {==$listItem["stadium"]=} on {==$listItem["date"]=}. Score: {==$listItem["winScore"]=} - {==$listItem["loseScore"]=}
+	 </div>'
+	)=*}
