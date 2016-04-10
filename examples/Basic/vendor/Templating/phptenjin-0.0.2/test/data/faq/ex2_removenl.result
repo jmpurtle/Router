@@ -1,0 +1,13 @@
+$ phptenjin --layout=ex2-layout.phtml ex2-content.phtml
+<!-- -->
+foo
+bar
+baz
+
+<!-- -->
+
+<!-- -->
+foo
+bar
+baz
+<!-- -->

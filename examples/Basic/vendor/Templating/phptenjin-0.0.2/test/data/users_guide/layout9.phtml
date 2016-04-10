@@ -1,0 +1,25 @@
+<html lang="en">
+  <head>
+    <title>{=$title=}</title>
+  </head>
+  <body>
+
+    <!-- HEADER -->
+<?php start_placeholder('header_part'); ?>
+    <h1>{=$title=}</h1>
+<?php stop_placeholder(); ?>
+    <!-- /HEADER -->
+
+    <!-- CONTENT -->
+{==$content_part=}
+    <!-- /CONTENT -->
+
+    <!-- FOOTER -->
+<?php start_placeholder('footer_part'); ?>
+    <hr />
+    <address>webmaster@localhost</address>
+<?php stop_placeholder(); ?>
+    <!-- /FOOTER -->
+
+  </body>
+</html>

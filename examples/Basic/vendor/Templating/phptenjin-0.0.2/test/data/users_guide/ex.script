@@ -1,0 +1,7 @@
+<?php
+require_once 'Tenjin.php';
+$engine = new Tenjin_Engine();
+$context = array('name'=>'World', 'items'=>array('<AAA>', 'B&B', '"CCC"'));
+$output = $engine->render('ex.phtml', $context);
+echo($output);
+?>

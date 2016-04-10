@@ -1,0 +1,6 @@
+$ phptenjin -s example2.phtml
+<?php  $list = array(1, 2, 3); 
+ for ($list as $item) { 
+echo '<p>', $item, '</p>
+'; } 
+?>

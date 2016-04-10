@@ -1,0 +1,4 @@
+$ php ex6-expr-pattern.php
+<p>HTML escaped: AAA&amp;BBB</p>
+<p>not escaped:  AAA&BBB</p>
+<p>not escaped:  AAA&BBB</p>

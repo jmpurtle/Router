@@ -1,0 +1,3 @@
+$ php ex3.php
+echo 'Hello ', escapeHTML($name), '!
+';

@@ -1,0 +1,14 @@
+$ php example15.php
+echo '<h1>', escapeHTML($title), '</h1>
+<ul>
+'; foreach ($items as $item) { 
+echo ' <li>', escapeHTML($item), '</li>
+'; } 
+echo '</ul>
+';
+<h1>phpTenjin Example</h1>
+<ul>
+ <li>&lt;foo&gt;</li>
+ <li>&amp;bar</li>
+ <li>&quot;baz&quot;</li>
+</ul>

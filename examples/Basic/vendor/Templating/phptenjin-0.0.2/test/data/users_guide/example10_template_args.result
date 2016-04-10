@@ -1,0 +1,7 @@
+$ phptenjin -s example10.phtml
+<?php echo '<?xml version="1.0"?>
+'; $title = @$_context['title']; $name = @$_context['name'];
+echo '<h1>', htmlspecialchars($title), '</h1>
+<p>Hello ', htmlspecialchars($name), '!</p>
+';
+?>

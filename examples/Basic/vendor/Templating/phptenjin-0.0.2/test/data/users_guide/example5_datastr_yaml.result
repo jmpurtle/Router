@@ -1,0 +1,9 @@
+$ phptenjin -c '{text: foo, items: [a, b, c], hash: {x: 1, y: 2} }' example5.phtml
+text:  foo
+items:
+  - a
+  - b
+  - c
+hash:
+  x: 1
+  y: 2

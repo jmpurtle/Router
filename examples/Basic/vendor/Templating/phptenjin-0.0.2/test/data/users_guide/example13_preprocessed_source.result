@@ -1,0 +1,3 @@
+$ phptenjin --preprocess -sb example13.phtml
+echo '<a href="/items/show/', $params["id"], '">Show ', htmlspecialchars($params["name"]), '</a>
+';

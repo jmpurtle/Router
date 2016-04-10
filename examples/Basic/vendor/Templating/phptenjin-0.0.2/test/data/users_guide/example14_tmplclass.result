@@ -1,0 +1,16 @@
+$ php example14.php
+---- php code ----
+echo '<h1>', htmlspecialchars($title), '</h1>
+<ul>
+'; foreach ($items as $item) { 
+echo ' <li>', htmlspecialchars($item), '</li>
+'; } 
+echo '</ul>
+';
+---- output ----
+<h1>phpTenjin Example</h1>
+<ul>
+ <li>&lt;AAA&gt;</li>
+ <li>B&amp;B</li>
+ <li>&quot;CCC&quot;</li>
+</ul>

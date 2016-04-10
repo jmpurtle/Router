@@ -1,0 +1,16 @@
+<?PHP require('helper.php'); ?>
+<form>
+  <label>Select your language:</label>
+  <select name="lang">
+  <?php $lang = $params['lang']; ?>
+  <?php $table = array(true=>' selected="selected"', false=>''); ?>
+<?PHP foreach ($languages as $val=>$name) { ?>
+    <option value="{*==$val=*}" {==$table[$lang=='{*==$val=*}']=}>{*=$name=*}</option>
+<?PHP } ?>
+  </select>
+  <input type="submit" value="OK" />
+</form>
+<p>
+  {*==link_to('Back', 'index')=*} |
+  {*==link_to('Show '._ep('$params["name"]'), 'show', _p('$params["id"]'))=*}
+</p>

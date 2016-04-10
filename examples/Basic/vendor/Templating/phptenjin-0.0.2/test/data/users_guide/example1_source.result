@@ -1,0 +1,14 @@
+$ phptenjin -s example1.phtml
+<?php echo '<table>
+  <tbody>
+'; $items = array('<foo>', 'bar&bar', '"baz"'); 
+ foreach ($items as $item) { 
+echo '    <tr>
+      <td>', $item, '</td>
+      <td>', htmlspecialchars($item), '</td>
+    </tr>
+'; } 
+echo '  <tbody>
+</table>
+';
+?>

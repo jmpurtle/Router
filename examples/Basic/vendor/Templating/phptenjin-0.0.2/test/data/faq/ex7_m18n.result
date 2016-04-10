@@ -1,0 +1,10 @@
+$ php ex7-m18n.php
+--- lang: en ---
+<div>
+ <p>Hello World!</p>
+</div>
+
+--- lang: fr ---
+<div>
+ <p>Bonjour World!</p>
+</div>

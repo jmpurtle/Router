@@ -1,0 +1,4 @@
+$ phptenjin -z ex1.phtml
+[NG] ex1.phtml
+Parse error: syntax error, unexpected T_ECHO in ex1.phtml on line 5
+Errors parsing ex1.phtml

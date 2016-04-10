@@ -1,0 +1,19 @@
+<html>
+  <body>
+
+    <div id="sidemenu">
+<?php import('sidemenu.phtml'); ?>
+    </div>
+
+    <div id="main-content">
+<?php foreach ($items as $item) { ?>
+      <p>{=$item=}</p>
+<?php } ?>
+    </div>
+
+    <div id="footer">
+<?php import('footer.phtml'); ?>
+    </div>
+
+  </body>
+</table>

@@ -1,0 +1,11 @@
+<table>
+  <tbody>
+<?php $items = array('<foo>', 'bar&bar', '"baz"'); ?>
+<?php foreach ($items as $item) { ?>
+    <tr>
+      <td>{==$item=}</td>
+      <td>{=$item=}</td>
+    </tr>
+<?php } ?>
+  <tbody>
+</table>
