@@ -241,6 +241,25 @@ If the previous checks failed to apply then a \Magnus\Exceptions\HTTPNotFound ex
 
 Once there are no more path elements to consume then the dispatcher will attempt to instantiate the current class if not already so. Then it will check to see if the current object can be called as a function `__invoke($args)` and yield that on success. Otherwise check if the parent object can be called and yield that.
 
+Caching
+-------
+That's fine and all, but what about caching? Surely we could precompile all of the potential routes and use a hash map for O(1) routing lookups. Yeah, it's possible, the question becomes, "Do you really want to do that?". Consider the application in advanced stages where there are dynamic components, path elements and route reorients. You'd need to have a special toolchain to generate those routes and then a route explorer to properly handle the dynamic components. Not to mention all of the extra code to test, lookups, etc.
+
+You certainly could implement a cache with appropriate callback/hook points and extensions but the goal here is to provide a router that could be used as part of a minimum viable product release. Buying you enough time to evaluate whether or not the caching of this particular process does provide a benefit.
+
+An important note
+=================
+Many things have changed with the latest version that is currently still in development. If you want to keep up on the latest dev version, view the basic example in the development branch.
+
+Things changed so far:
+* Severe reduction in coupling between the router and the context object. null is now an accepted value
+* Usage of environment variable for debugging and short circuiting logging within the router
+* More debug messages, yay!
+* Smarter logic instead of endless if - elses
+* Tracking of the previous element and current element so dispatch can be better handled
+* Usage of __get() for dynamic lookup components e.g. '27'
+* Several logic holes plugged
+
 Future updates
 ==============
 Removing the coupling between the router and the context object/logging mechanism. Ideally, context would be its own package and the router should be less dependent on exact functions provided in the context object.
