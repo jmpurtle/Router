@@ -4,7 +4,7 @@ namespace Application {
 	//Setup
 	require_once 'autoload.php';
 
-	putenv('APP_ROLE=PRODUCTION');
+	putenv('APP_ROLE=DEBUG');
 	$logger   = new \Loggers\ScreenLogger();
 	$router   = new \Routers\ObjectRouter($logger);
 	$dispatch = new \Dispatchers\SimpleDispatcher();

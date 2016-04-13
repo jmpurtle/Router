@@ -19,6 +19,13 @@ namespace Controllers {
 			
 		}
 
+		public function __get($element) {
+			return [
+				'view'           => 'controllerResponse',
+				'controllerData' => 'Element: ' . $element
+			];
+		}
+
 	}
 
 }

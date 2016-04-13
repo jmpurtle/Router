@@ -170,7 +170,7 @@ namespace Routers {
 				}
 
 				if ($isObjectMethod) {
-					yield [$previous, $obj->$current(), true];
+					yield [$previous, $obj->$current($path, $context), true];
 					return;
 				}
 
