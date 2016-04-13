@@ -10,6 +10,15 @@ namespace Controllers {
 			$this->context = $context;
 		}
 
+		public function __invoke($context) {
+
+			return [
+				'view'           => 'controllerResponse',
+				'controllerData' => 'Root Controller Default Action'
+			];
+			
+		}
+
 	}
 
 }

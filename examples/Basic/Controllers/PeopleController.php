@@ -10,7 +10,10 @@ namespace Controllers {
 		}
 
 		public function __invoke() {
-			return "I'm all people.";
+			return [
+				'view'           => 'controllerResponse',
+				'controllerData' => 'PeopleController default action'
+			];
 		}
 
 		public function __get($id = null) {

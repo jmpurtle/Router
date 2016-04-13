@@ -3,20 +3,21 @@ namespace Dispatchers {
 
 	class SimpleDispatcher {
 
-		public function __invoke($previous, $obj) {
-
-			if (is_callable($obj)) { return [$obj()]; }
-
-			if (is_callable(array($obj, $previous))) { return [$obj->$previous]; }
+		public function __invoke($previous, $obj, $context = null) {
 
 			if (!is_object($obj)) { 
 
-				if (class_exists($obj)) { $obj = new $obj; } 
-				return [var_export($obj, true)]; 
+				if (class_exists($obj)) { $obj = new $obj($context); } 
 
 			}
 
-			return [$obj];
+			if (is_callable($obj)) { return $obj($context); }
+
+			if (is_callable(array($obj, $previous))) { return $obj->$previous($context); }
+
+			
+
+			return $obj;
 		}
 
 	}

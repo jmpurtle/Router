@@ -10,11 +10,17 @@ namespace Controllers {
 		}
 
 		public function __invoke() {
-			return "Hello, I'm " . $this->id;
+			return [
+				'view'           => 'controllerResponse',
+				'controllerData' => 'PersonController with ID of ' . $this->id . " default action"
+			];
 		}
 
 		public function foo() {
-			return "User " . $this->id . ", I pity da foo!";
+			return [
+				'view'           => 'controllerResponse',
+				'controllerData' => 'PersonController with ID of ' . $this->id . ", foo action"
+			];
 		}
 
 	}
