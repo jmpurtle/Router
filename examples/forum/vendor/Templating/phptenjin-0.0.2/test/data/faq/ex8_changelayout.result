@@ -1,0 +1,11 @@
+$ phptenjin --layout=ex8-baselayout.phtml ex8-content.phtml
+<html>
+  <body>
+    <h1>Changing Layout Template Test</h1>
+<div id="content">
+foo
+bar
+baz
+</div>
+  </body>
+</html>

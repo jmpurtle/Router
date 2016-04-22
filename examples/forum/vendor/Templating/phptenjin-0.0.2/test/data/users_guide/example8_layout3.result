@@ -1,0 +1,8 @@
+$ phptenjin --postfix='.phtml' --layout=':layout8_html' content8.phtml
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <body>
+<h1>Hello World!</h1>
+
+  </body>
+</html>

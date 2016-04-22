@@ -1,0 +1,3 @@
+$ phptenjin --cache ex2.phtml
+
+Parse error: syntax error, unexpected T_ECHO in /home/tmp/ex2.phtml.cache on line 2

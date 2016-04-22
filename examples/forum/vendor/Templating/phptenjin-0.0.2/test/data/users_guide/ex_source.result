@@ -1,0 +1,9 @@
+$ phptenjin -s ex.phtml
+<?php echo 'Hello ', $name, '!
+<ul>
+'; foreach ($items as $item) { 
+echo ' <li>', htmlspecialchars($item), '</li>
+'; } 
+echo '</ul>
+';
+?>

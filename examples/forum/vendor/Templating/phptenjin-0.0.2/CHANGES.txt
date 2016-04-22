@@ -1,0 +1,20 @@
+=======
+CHANGES
+=======
+
+Release 0.0.2
+-------------
+
+* [Changes]
+
+  * When '-S', '-a retrieve', '-X', or '-a statements' specified,
+    phptenjin command replaces text before expressions into spaces
+    and print it.
+
+* [Bugfix]
+
+  * pytenjin command printed "\n\n" instead of "\n" when '-U' specified.
+    Fixed to print "\n".
+
+
+

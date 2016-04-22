@@ -1,0 +1,7 @@
+$ phptenjin -c '$name="World"; $items=array("<AAA>","B&B","\"CCC\"");' ex.phtml
+Hello World!
+<ul>
+ <li>&lt;AAA&gt;</li>
+ <li>B&amp;B</li>
+ <li>&quot;CCC&quot;</li>
+</ul>

@@ -1,0 +1,15 @@
+<?PHP $states = array('CA'=>"California", ?>
+<?PHP                 'NY'=>"New York", ?>
+<?PHP                 'FL'=>"Florida",  ?>
+<?PHP                 'TX'=>"Texas",  ?>
+<?PHP                 'HI'=>"Hawaii"); ?>
+<?php $state = $params['state']; ?>
+<?php $chk = array(true=>' selected="selected"', false=>''); ?>
+<select name="state">
+  <option value="">-</option>
+<?PHP $codes = array_keys($states); ?>
+<?PHP sort($codes); ?>
+<?PHP foreach ($codes as $code) { ?>
+  <option value="{*==$code=*}"{==$chk[$state=='{*==$code=*}']=}>{*=$states[$code]=*}</option>
+<?PHP } ?>
+</select>

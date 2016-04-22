@@ -1,0 +1,12 @@
+$ phptenjin --preprocess -sb example12.phtml
+ $state = $params['state']; 
+ $chk = array(true=>' selected="selected"', false=>''); 
+echo '<select name="state">
+  <option value="">-</option>
+  <option value="CA"', $chk[$state=='CA'], '>California</option>
+  <option value="FL"', $chk[$state=='FL'], '>Florida</option>
+  <option value="HI"', $chk[$state=='HI'], '>Hawaii</option>
+  <option value="NY"', $chk[$state=='NY'], '>New York</option>
+  <option value="TX"', $chk[$state=='TX'], '>Texas</option>
+</select>
+';

@@ -1,0 +1,4 @@
+$ phptenjin -s --escapefunc=escapeHTML ex3.phtml
+<?php echo 'Hello ', escapeHTML($name), '!
+';
+?>

@@ -1,0 +1,7 @@
+<?php //@ARGS context, categoryID, category ?>
+<h1>Category: {==$categoryID=}</h1>
+<ul>
+<?php foreach ($category[$categoryID]['threads'] as $threadTitle => $threadBody) { ?>
+	<li>{==$threadTitle=}</li>
+<?php } ?>
+</ul>

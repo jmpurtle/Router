@@ -1,0 +1,10 @@
+$ phptenjin -s ex5.phtml
+<?php  echo '<?xml version="1.0 ?>
+'; $x = @$_context['x']; $y = @$_context['y'];
+echo '<p>
+  x = ', $x, '
+  y = ', $y, '
+  z = ', $z, '
+</p>
+';
+?>

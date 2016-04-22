@@ -1,0 +1,6 @@
+<?PHP // ex. link_to('Show', '/show/1')  => <a href="/show/1">Show</a> ?>
+<?PHP function link_to($label, $url) { ?>
+<?PHP     $url = preg_replace('/%2F/', '/', urlencode($url)); ?>
+<?PHP     return "<a href=\"$url\">$label</a>"; ?>
+<?PHP } ?>
+{*==link_to('Show '._ep('$params["name"]'), '/items/show/'._p('$params["id"]'))=*}

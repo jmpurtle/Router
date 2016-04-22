@@ -1,0 +1,19 @@
+$ phptenjin -a preprocess select.phtml
+<form>
+  <label>Select your language:</label>
+  <select name="lang">
+  <?php $lang = $params['lang']; ?>
+  <?php $table = array(true=>' selected="selected"', false=>''); ?>
+    <option value="en" {==$table[$lang=='en']=}>Engilish</option>
+    <option value="fr" {==$table[$lang=='fr']=}>French</option>
+    <option value="de" {==$table[$lang=='de']=}>German</option>
+    <option value="es" {==$table[$lang=='es']=}>Spanish</option>
+    <option value="ch" {==$table[$lang=='ch']=}>Chinese</option>
+    <option value="ja" {==$table[$lang=='ja']=}>Japanese</option>
+  </select>
+  <input type="submit" value="OK" />
+</form>
+<p>
+  <a href="/app/index">Back</a> |
+  <a href="/app/show/{==$params["id"]=}">Show {=$params["name"]=}</a>
+</p>

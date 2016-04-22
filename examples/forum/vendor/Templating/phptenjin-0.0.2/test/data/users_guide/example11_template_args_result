@@ -1,0 +1,7 @@
+$ phptenjin -c '$x=10; $y=20' example11.phtml
+<p>
+x = 10
+y = 
+Notice: Undefined variable: y in /usr/local/lib/php/Tenjin.php(488) : eval()'d code on line 4
+   # error
+</p>

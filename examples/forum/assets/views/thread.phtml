@@ -1,0 +1,7 @@
+<?php //@ARGS context, threadID, thread ?>
+<h1>Thread: {==$threadID=}</h1>
+<ul>
+<?php foreach ($thread[$threadID]['posts'] as $postTitle => $postBody) { ?>
+	<li>{==$postTitle=}</li>
+<?php } ?>
+</ul>

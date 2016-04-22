@@ -1,0 +1,4 @@
+$ phptenjin -z example3.phtml
+[NG] example3.phtml
+Parse error: syntax error, unexpected T_AS, expecting ';' in example3.phtml on line 2
+Errors parsing example3.phtml

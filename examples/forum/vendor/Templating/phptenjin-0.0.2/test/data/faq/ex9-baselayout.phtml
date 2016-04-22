@@ -1,0 +1,27 @@
+<html>
+ <body>
+
+<?php /// if a string captured as 'header_part' exists then print it, ?>
+<?php /// else print default header part. ?>
+  <div id="header">
+<?php start_placeholder('header_part'); ?>
+   <img src="img/logo.png" alt="logo" ?>
+<?php stop_placeholder(); ?>
+  </div>
+
+<?php /// main content part ?>
+  <div id="content">
+<?php echo $_context['content_part']; ?>
+  </div>
+
+<?php /// if a string captured as 'footer_part' exists then print it, ?>
+<?php /// else print default footer part. ?>
+  <div id="footer">
+<?php start_placeholder('footer_part'); ?>
+   <hr />
+   <em>webmaster@example.com</em>
+<?php stop_placeholder(); ?>
+  </div>
+  
+ </body>
+</html>

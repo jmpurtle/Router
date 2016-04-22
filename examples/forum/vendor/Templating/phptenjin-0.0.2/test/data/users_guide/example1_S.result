@@ -1,0 +1,13 @@
+$ phptenjin -S example1.phtml
+<?php 
+
+ $items = array('<foo>', 'bar&bar', '"baz"'); 
+ foreach ($items as $item) { 
+
+          $item; 
+          htmlspecialchars($item); 
+
+ } 
+
+
+?>

@@ -1,0 +1,9 @@
+$ phptenjin -c '$x=10; $y=20; $z=30;' ex5.phtml
+<?xml version="1.0 ?>
+<p>
+  x = 10
+  y = 20
+  z = 
+Notice: Undefined variable: z in /usr/local/lib/php/Tenjin.php(497) : eval()'d code on line 6
+
+</p>

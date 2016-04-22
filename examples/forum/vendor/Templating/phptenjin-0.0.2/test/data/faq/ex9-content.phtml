@@ -1,0 +1,12 @@
+<?php /// '$_context["_layout"] = "foobar.html"' is equivarent to
+<?php /// '{% extends "foobar.html" %}' in Django template engine. ?>
+<?php $_context['_layout'] = 'ex9-customlayout.phtml'; ?>
+
+<?php /// main content part ?>
+<?php start_capture('content_part'); ?>
+<ul>
+<?php foreach ($items as $item) { ?>
+  <li>{=$item=}</li>
+<?php } ?>
+</ul>
+<?php stop_capture(); ?>
