@@ -2,7 +2,7 @@
 Magnus Object Router
 ======================
 
-    © 2016 John Mark Purtle and contributors.
+    © 2015 - 2016 John Mark Purtle and contributors.
 
 ..
 
@@ -20,15 +20,20 @@ This router is based on a 'dispatch protocol <https://github.com/marrow/Webcore/
 Installation
 ============
 
-Currently, You must copy the file into your project, preferably within vendors/Magnus/Router/ and then modify the autoloader as needed. Alternatively, install the magnus/router package via composer. You will also need to create a context object similar to the one provided below.
+Currently, You must copy the file into your project, preferably within vendors/Magnus/Router/ and then modify the autoloader as needed.
+
+Composer installation is planned for the future.
 
 Usage
 =====
 
 This section is split into parts to cover integration and the interactions this router provides to users.
 
-Framework Use
--------------
+Setup
+=====
+
+Autoloading
+-----------
 
 To start, one must include the autoloader that will allow you to resolve both the router itself and the controllers.
 
@@ -38,231 +43,87 @@ require_once 'vendor/autoload.php';
 $router = new \Magnus\Router\Object\ObjectRouter();
 ```
 
-Now, the router's invocation requires two parameters, a context object and the base object or object name to start routing from. The context object is where you provide your path, logging, controller prefixes, and anything else that may be necessary to properly instantiate objects.
+There are several other parts to the setup you may want to create.
 
-The bare minimum of a context object would be
+Environment
+-----------
+
+The first is an environment variable by the name of APP_ROLE. This is used by the router to issue debugging statements and may be used in any other Magnus components for that purpose. If you wish to enable debug mode, simply set the value of this environment variable to DEBUG.
 
 ```
+putenv('APP_ROLE=DEBUG')
+```
 
-namespace Magnus\Request;
+At this time, to disable debug, just change the environment variable to something else. Certain values like PRODUCTION may be used in the future to enable certain optimizations, project functionalities or features such as preprocessing, opcode caching or fingers-crossed logging.
 
-class Context {
-    protected $requestURI;
-    protected $baseURI;
-    protected $requestPath;
-    protected $appMode;
-    protected $logger;
-    protected $controllerPrefix;
+Logging
+-------
 
-    public function __construct(Array $config) {
-        $this->documentRoot     = isset($config['documentRoot']) 
-                                ? $this->normalizeURI($config['documentRoot']) 
-                                : $this->normalizeURI($_SERVER['DOCUMENT_ROOT']);
+Logging, is a fairly important part of operating a framework as it gives you insight into where and why things might not be going right. Done well, it will allow you to replay requests from start to finish so you don't need to squeeze those details out of your users. In this routing component, logging is for understanding how the path resolves to the final object. Which brings us to our next subject...
 
-        $this->requestURI       = isset($config['requestURI']) 
-                                ? $this->normalizeURI($config['requestURI'])
-                                : '/';
+Request Processing
+------------------
 
-        $this->baseURI          = isset($config['baseURI']) 
-                                ? str_replace($this->documentRoot, '', $this->normalizeURI($config['baseURI']))
-                                : '/';
+The router only cares about the request as far as the path and any contextual information it introduces. Framework consumers using this router should provide an array of strings to the router. How the request itself gets parsed into that array is not a concern. This deliberate obliviousness is for a reason. Suppose you have a multi-tenanted application and one operates in a web context, another operates in a CLI context. This approach allows the router to serve all requests without any special considerations as long as the ultimate input is an array of strings. '/foo/bar/baz', 'foo\bar\baz', 'foo.bar.baz', etc are all provided to the router as ['foo', 'bar'. 'baz']. If you need to provide closures, functions, etc as part of the path, you should be creating a different version of this router based on the specific use case and the 'Dispatch Protocol <https://github.com/marrow/Webcore/wiki/Dispatch-Protocol' to guide the design.
 
-        $this->assetRoot        = isset($config['assetRoot'])
-                                ? $this->normalizeURI($config['assetRoot'])
-                                : rtrim($this->baseURI, '/') . '/src/assets';
+Routing
+-------
 
-        $this->appMode          = isset($config['appMode']) 
-                                ? $config['appMode'] 
-                                : 'DEVELOPMENT';
+In constructing the router, you have the option to pass in an external instance of a logger for use. If one is not provided to the router then debug mode logging will automatically be disabled for the router itself.
 
-        $this->logger           = isset($config['logger']) 
-                                ? $config['logger'] 
-                                : null;
+The router invocation requires three parameters, a context object, a base object or object name (fully qualified), and the path in the form of an array of strings.
 
-        $this->controllerPrefix = isset($config['controllerPrefix']) 
-                                ? $config['controllerPrefix'] 
-                                : 'Magnus\\Controllers\\';
-        
-        $this->requestPath = explode('/', $this->requestURI);
-        
-        if (end($this->requestPath) === '') {
-            array_pop($this->requestPath);
-        }
+The context object is passed to any object instantiated by the router itself. This context object may be null or an object containing contextual information that any routable object may need for its function.
 
-        if ($this->requestPath[0] === '') {
-            array_shift($this->requestPath);
-        }
+The base object or object name is what the router begins its descent on. This is typically some sort of Root object, however, during routing, an object may reroute the request on a different object. If you are passing in a string as the second parameter then this must be a fully qualified object reference. E.g. '\\Controller\\ControllerName'.
 
-    }
+As mentioned in Request Processing, the third parameter must be an array of strings. The values will be used to discover additional routable objects via properties, endpoints via object methods, or parameterized objects via __get($value);
 
-    public function normalizeURI($uri) {
-        return strtolower(str_replace('\\', '/', $uri));
-    }
 
-    public function getRequestURI() {
-        return $this->requestURI;
-    }
+The router is a generator that returns a tuple of [$previous, $obj, $isEndpoint]. $previous is the last processed chunk of the path provided to the router at the time of yield. $obj is the current object under consideration. The first $obj will be your base object for example. $isEndpoint is a boolean that will evaluate as true if an object method has been discovered from the path you provided. Framework consumers should take this as a cue to break out and begin the dispatch step.
 
-    public function getAssetRoot() {
-        return $this->assetRoot;
-    }
+The Object Router makes use of routable objects with the basic structure of:
 
-    public function setRequestURI($uri) {
-        $this->requestURI = $this->normalizeURI($uri);
-    }
-
-    public function getBaseURI() {
-        return $this->baseURI;
-    }
-    public function setBaseURI($uri) {
-        $this->baseURI = $this->normalizeURI($uri);
-    }
-
-    public function getRequestPath() {
-        return $this->requestPath;
-    }
-
-    public function getAppMode() {
-        return $this->appMode;
-    }
-
-    public function getLogger() {
-        return $this->logger;
-    }
-
-    public function getControllerPrefix() {
-        return $this->controllerPrefix;
+class RoutableObjectName {
+    
+    public function __invoke($args = []) {
+        return [];
     }
 
 }
-```
 
-The context object handles the normalization and splitting of the path into an array for use in the routing process. The exact implementation of the normalization process is entirely up to you. If null is passed as context to the router then it will attempt to invoke the root object otherwise issue a 404.
+Routable objects should return an array or a generator so they can be transformed into an appropriate view by your template engine regardless of the actual engine used. Returning simple data structures or iterables allows you to apply conditional formatting on the response as well such as checking if the request is an AJAX request so the request will be responded with JSON for use on the client side.
 
-The base for the second parameter can either be a resolvable class name such as 'RootController' given `$context->getControllerPrefix() = 'Magnus\Controllers\'` or it can be an instantiated object. This grants you the flexibility to switch between routers with a "meta-router" or router middleware. For example, if a resource cannot be found through Object Route, a router event can be emitted, switching the router to a different type that can correctly resolve the request.
+To connect to other routable objects, include an object reference or object as a property with the name of a path element. For example, given a root object and the path of '/foo/bar/baz', the root object contains a property $foo. The Foo object contains a property of $bar. The Bar object may have a property of $baz or a method baz.
 
-To begin the routing process:
+If the path chunk refers to a non-object (method, function, or a static value that does not resolve to an object) then routing will terminate at that point.
 
-```
-foreach ($router($context, $root) as $signal) {
-    list($object, $chunk, $path, $isEndpoint) = $signal;
-    if ($isEndpoint) {
-        //Your chosen handling process for obtaining the server response data from $object
-    }
-}
-```
-
-It is recommended that you wrap the routing process in a try/catch/finally block so you can handle the rendering process appropriately in cases of exceptions such as the \Magnus\Exceptions\HTTPNotFound.
-
-The recommended response from your controllers is an array containing data so they can be transformed into JSON or into views by your template engine.
-
-Routable Objects
---------------------
-
-Every routable object requires at the very least, `an __invoke($args = [])`. A very basic example:
-
-```
-namespace Magnus\Controllers;
-class RootController {
+class RoutableObjectName {
+    
+    public $objectReference   = '\\Routable\\RoutableChildObjectName';
+    public $staticValue       = 'foo';
+    public $functionReference = 'date';
+    public $closureReference  = function () { //do the thing }
 
     public function __invoke($args = []) {
         return [];
     }
+
 }
-```
 
-For further descent, add a property with either a string or an object to the controller:
+With a non-null context object, you may use the constructor to modify the context as you see fit. A common use would be to increment the access control level requirements as you descend therefore the level of authority is kept minimal.
 
-```
-namespace Magnus\Controllers;
-class RootController {
-
-    public $user = 'UsersController';
-
-    public function __invoke($args = []) {
-        return [];
-    }
-}
-```
-
-If you require some initial setup such as instantiating the object for the property or setting access control levels, do so in the constructor of the controller.
-
-```
-namespace Magnus\Controllers;
-class RootController {
-
-    public $user;
-
-    public function __construct($context) {
-        $this->user = new UsersController();
-    }
-
-    public function __invoke($args = []) {
-        return [];
-    }
-}
-```
 
 "But what about if I have protected or private properties/methods? Won't PHP throw errors if you try to access those?" Good question. Fear not, object router makes use of get_class_methods and get_object_vars to discover attributes. This means anything marked as protected or private, object router knows nothing about it as far as the process goes. It may as well not exist to router. This offers a nice side effect of not revealing any information for a timing attack nor requiring naming conventions such as prefixing underscores to the name.
 
-The first thing router will attempt to do is instantiate the current object in question (your base object or root controller) if it is not already an object.
-
-The next step is to check for potential endpoints. Endpoints are methods defined in your controller and if one is discovered then router will end there and yield the endpoint along with remaining path elements for you to handle.
-
-If no methods matching the current path element are found then router will attempt to find a property matching that name and proceed with the next router step.
-
-If neither of those applies, (no attributes found or if the path element is numeric) then router will check for the existence of a 'lookup' method and pass any remaining path elements and context to it. An example callable with a lookup:
-
-```
-namespace Magnus\Controllers;
-class UsersController {
-
-    public function __invoke($args = []) {
-        return [];
-    }
-
-    public function lookup($path, $context) {
-        $userID = $path[0];
-        $userProfile = new UserController($userID);
-        return [$userProfile, [$path[0]]];
-    }
-}
-```
-
-The lookup method must return a current object and the consumed elements in an array. Router will then remove the number minus one of consumed elements from the beginning of the remaining path. We do not remove the final consumed element because it naturally gets popped off at the end of the iteration by the routeIterator and this prevents us from overconsuming a path element. For example:
-
-$chunk = 27; $path = [27, 'modify']; will become $chunk = '/27'; $path = [27, 'modify'];
-
-$chunk = 'projects'; $path = ['projects', 'subdomain', 'user', '27' 'modify']; will become $chunk = '/projects/subdomain'; $path = ['subdomain', 'user', '27' 'modify'];
-
-If an exception is issued from the lookup then a \Magnus\Exceptions\HTTPNotFound exception will be thrown.
-
-If the previous checks failed to apply then a \Magnus\Exceptions\HTTPNotFound exception will be thrown.
-
-Once there are no more path elements to consume then the dispatcher will attempt to instantiate the current class if not already so. Then it will check to see if the current object can be called as a function `__invoke($args)` and yield that on success. Otherwise check if the parent object can be called and yield that.
-
 Caching
 -------
-That's fine and all, but what about caching? Surely we could precompile all of the potential routes and use a hash map for O(1) routing lookups. Yeah, it's possible, the question becomes, "Do you really want to do that?". Consider the application in advanced stages where there are dynamic components, path elements and route reorients. You'd need to have a special toolchain to generate those routes and then a route explorer to properly handle the dynamic components. Not to mention all of the extra code to test, lookups, etc.
+That's fine and all, but what about caching? Surely we could precompile all of the potential routes and use a hash map for O(1) routing lookups. Yeah, it's possible, the question becomes, "Do you really want to do that?". Consider the application in advanced stages where there are dynamic components, path elements and route reorients. You'd need to have a special toolchain to generate those routes and then a route explorer to properly handle the dynamic components. Not to mention all of the extra code to test, lookups, etc. Anything but an O(1) cache is ineffective compared to this.
 
 You certainly could implement a cache with appropriate callback/hook points and extensions but the goal here is to provide a router that could be used as part of a minimum viable product release. Buying you enough time to evaluate whether or not the caching of this particular process does provide a benefit.
 
-An important note
-=================
-Many things have changed with the latest version that is currently still in development. If you want to keep up on the latest dev version, view the basic example in the development branch.
-
-Things changed so far:
-* Severe reduction in coupling between the router and the context object. null is now an accepted value
-* Usage of environment variable for debugging and short circuiting logging within the router
-* More debug messages, yay!
-* Smarter logic instead of endless if - elses
-* Tracking of the previous element and current element so dispatch can be better handled
-* Usage of __get() for dynamic lookup components e.g. '27'
-* Several logic holes plugged
-
 Future updates
 ==============
-Removing the coupling between the router and the context object/logging mechanism. Ideally, context would be its own package and the router should be less dependent on exact functions provided in the context object.
 
 Test coverage as close to 100% as possible.
 
@@ -276,7 +137,7 @@ Object Router has been released under the MIT Open Source license.
 The MIT License
 ---------------
 
-Copyright © 2015 John Mark Purtle and contributors.
+Copyright © 2015-2016 John Mark Purtle and contributors.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 documentation files (the “Software”), to deal in the Software without restriction, including without limitation the

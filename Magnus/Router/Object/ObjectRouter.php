@@ -1,142 +1,201 @@
 <?php
-namespace Magnus\Router\Object;
+namespace Routers {
 
-class ObjectRouter {
+    class ObjectRouter {
 
-    /* This version of object router makes use of yield syntax which is only available from PHP 5.5 onwards.
-     * If support for lower level versions are needed, another version of this routerer can be written to eliminate yield syntax.
-     */
-    
-    public function routeIterator(&$path) {
-        while (!empty($path)) {
-            yield $path[0];
-            array_shift($path);
-            /* This prevents having to put back a value in the event of a 
-             * readjustment in the router path.
-             * Testing indicates that it's better to do array maninpulation than it is
-             * to implement SplDoublyLinkedList for deque behavior. Likewise, 
-             * simply tracking the index is a bit slower and can add complexity 
-             * when dealing with reorients/rerouteres. 
-             */
-        }
-    }
-
-    public function __invoke($context, $root) {
-        $log              = (!empty($context)) ? $context->getLogger() : null;
-        $path             = (!empty($context)) ? $context->getRequestPath() : [];
-        $last             = '';
-        $parent           = null;
-        $current          = $root;
-        $controllerPrefix = (!empty($context)) ? $context->getControllerPrefix() : '';
+        public $logger;
         
-        if (!empty($context) && $context->getAppMode() === 'DEBUG' && $log !== null) {
-            $log->addDebug('Starting Object router', [
-                'request' => (!empty($context)) ? $context->getRequestURI() : '/',
-                'path'    => var_export($path, true),
-                'root'    => var_export($root, true)
-            ]);
+        public function __construct($logger = null) {
+            $this->logger = $logger;
         }
 
-        foreach ($this->routeIterator($path) as $chunk) {
-            if (!empty($context) && $context->getAppMode() === 'DEBUG' && $log !== null) {
-                $log->addDebug('Beginning router step.', [
-                    'chunk'   => $chunk,
-                    'path'    => var_export($path, true),
-                    'current' => var_export($current, true)
-                ]);
+        public function routeIterator(&$path) {
+            //Iterating through the path, popping elements from the left as they are seen
+            $last = null;
+            
+            while ($path) {
+                yield [$last, $path[0]];
+                $last = array_shift($path);
+                /* This prevents having to put back a value in the event of a 
+                 * readjustment in the router path.
+                 * Testing indicates that it's better to do array maninpulation than it is
+                 * to implement SplDoublyLinkedList for deque behavior. Likewise, 
+                 * simply tracking the index is a bit slower and can add complexity 
+                 * when dealing with reorients/reroutes. 
+                 */
             }
 
-            if (!is_object($current) && class_exists($controllerPrefix . $current)) {
-                if (!empty($context) && $context->getAppMode() === 'DEBUG' && $log !== null) {
-                    $log->addDebug('Instantiating current class', [
-                        'request' => (!empty($context)) ? $context->getRequestURI() : '/',
+        }
+
+        public function __invoke($context, $obj, Array $path) {
+            /* Bringing some variables only used in debug into scope to eliminate repeat function calls
+             * and take advantage of PHP's copy on write
+             */
+            $debug = false;
+
+            if (getEnv('APP_ROLE') === 'DEBUG') {
+                $debug   = true;
+                $request = isset($context->request) ? $context->request : null;
+            }
+
+            $previous = null;
+            $current  = null;
+
+            if (!is_object($obj) && class_exists($obj)) {
+                    
+                if ($debug && $this->logger) {
+                    $this->logger->debug('Instantiating current class', [
+                        'context' => $request,
                         'current' => $current
                     ]);
+                    
                 }
+
+                $obj = new $obj($context);
+
+            }
+            
+            $routeIterator = $this->routeIterator($path);
+
+            foreach ($routeIterator as list($previous, $current)) {
                 
-                $resolvedClass = $controllerPrefix . $current;
-                $current       = new $resolvedClass($context);
-            }
+                if (!is_object($obj)) {
 
-            if (is_object($current)) {
-                $parent = $current;
-            }
+                    if (class_exists($obj)) {
+                        if ($debug && $this->logger) {
+                            $this->logger->debug('Instantiating current class', [
+                                'context' => $request,
+                                'current' => $current
+                            ]);
+                            
+                        }
 
-            if (!is_numeric($chunk)) {
-                if (array_key_exists($chunk, get_class_methods($parent))) {
-                    if (!empty($context) && $context->getAppMode() === 'DEBUG' && $log !== null) {
-                        $log->addDebug('Found an endpoint', [
-                            'request'    => (!empty($context)) ? $context->getRequestURI() : '/',
+                        $obj = new $obj($context);
+
+                    } else {
+
+                        if ($debug && $this->logger) {
+                            $this->logger->debug('Refusing to descend on non-objects', [
+                                'passed'  => $obj,
+                                'context' => $request,
+                                'current' => $current
+                            ]);
+                            
+                        }
+
+                        yield [$previous, $obj, true];
+                        return;
+                    }
+
+
+                }
+
+                /* Let's check for actual endpoints, methods are always endpoints. By making use of get_class_methods we
+                 * prevent the usage of protected/private methods as they aren't populated in the array provided by 
+                 * get_class_methods. This also protects against timing attacks as we operate on a safe set rather than 
+                 * executing a sub-process when we encounter a part we cannot allow access to.
+                 */
+                if (in_array($current, get_class_methods($obj))) {
+                    
+                    if ($debug && $this->logger) {
+                        $this->logger->debug('Found an endpoint', [
+                            'request'    => $request,
                             'isEndpoint' => true,
-                            'parent'     => var_export($parent, true),
-                            'handler'    => $chunk,
-                            'arguments'  => var_export($path, true)
+                            'parent'     => var_export($obj, true),
+                            'handler'    => $current,
+                            'path'       => var_export($path, true)
                         ]);
                     }
 
-                    yield array($parent, $chunk, $path, true);
+                    // Since we found an endpoint, we'll bail early and the values should still be preserved for yielding.
+                }
 
-                } elseif (array_key_exists($chunk, get_object_vars($parent))) {
-                    if (!empty($context) && $context->getAppMode() === 'DEBUG' && $log !== null) {
-                        $log->addDebug('Found a property', [
-                            'request'    => (!empty($context)) ? $context->getRequestURI() : '/',
-                            'property'   => $chunk,
-                            'parent'     => var_export($parent, true)
+                /* Next up is checking for properties that we can use to either descend further into controllers or static 
+                 * endpoints such as arrays, strings, etc.
+                 */
+                if (array_key_exists($current, get_object_vars($obj))) {
+                    
+                    if ($debug && $this->logger) {
+                        
+                        $this->logger->debug('Found a property: ' . $current, [
+                            'source'  => $obj,
+                            'current' => $current,
+                            'value'   => var_export($obj->$current, true)
                         ]);
+
                     }
 
-                    $current = $parent->$chunk;
+                    yield [$previous, $obj, false];
+                    $obj = $obj->$current;
+                    continue;
+
+                } 
+
+                if (method_exists($obj, '__get')) {
+                    /* We'll check if we can emulate getattr via __get and approach it that way. */
+                    if ($debug && $this->logger) {
+                        
+                        $this->logger->debug('Using __get() to recover: ' . $current, [
+                            'source'  => $obj,
+                            'current' => $current,
+                            'value'   => var_export($obj->$current, true)
+                        ]);
+
+                    }
+
+                    yield [$previous, $obj, false];
+                    $obj = $obj->__get($current);
+                    continue;
 
                 }
-
-            } elseif (method_exists($parent, 'lookup')) {
-                try {
-                    list($current, $consumed) = $parent->lookup($path, $context);
-                    $chunk = implode('/', $consumed);
-                    array_splice($path, 0, count($consumed) - 1);
-                } catch (Exception $e) {
-                    throw new \Magnus\Exceptions\HTTPNotFound();
-                }
-
-            } else {
-                $log->addDebug('Nothing found', [
-                    'object properties' => get_object_vars($parent),
-                    'object methods'    => get_class_methods($parent),
-                    'parent'            => var_export($parent, true)
-                ]);
-                throw new \Magnus\Exceptions\HTTPNotFound();
+                /* We failed to find the attribute within the object so we break out here, the details should still
+                 * be preserved inside this function.
+                 */
+                break;
             }
 
-            yield array($parent, $chunk, explode('/', $last), false);
-            $last = $last . '/' . $chunk;
+            if ($routeIterator->valid()) {
+                /* We bailed early for whatever reason, so obj is our last known attribute, previous is the path element
+                 * matching that object, and current is the failed element.
+                 */
+                $isObjectMethod = is_callable(array($obj, $current));
 
-        }
+                if ($debug && $this->logger) {
+                    $this->logger->debug("Routing interrupted while attempting to resolve attribute: $current", [
+                        'handler'   => var_export($obj, true),
+                        'endpoint'  => $isObjectMethod,
+                        'previous'  => $previous,
+                        'attribute' => $current
+                    ]);
+                }
 
-        if (!empty($context) && $context->getAppMode() === 'DEBUG' && $log !== null) {
-            $log->addDebug('No endpoint found', [
-                'request' => (!empty($context)) ? $context->getRequestURI() : '/',
-                'current' => var_export($current, true),
-                'parent'  => var_export($parent, true)
-            ]);
-        }
+                if ($isObjectMethod) {
+                    yield [$previous, $obj->$current($context, $path), true];
+                    return;
+                }
 
-        if (!is_object($current) && class_exists($controllerPrefix . $current)) {
-            $resolvedClass = $controllerPrefix . $current;
-            $current       = new $resolvedClass($context);
-        }
+                list($previous, $current) = $routeIterator->current();
+                yield [$previous, $obj, is_callable($obj)];
+                return;
 
-        if (is_callable($current)) {
-            $log->addDebug('Calling current.', [
-                'request' => (!empty($context)) ? $context->getRequestURI() : '/',
-                'current' => var_export($current, true)
-            ]);
-            yield array($current, '', $path, true);
-        } elseif (is_callable($parent)) {
-            $log->addDebug('Calling parent.', [
-                'request' => (!empty($context)) ? $context->getRequestURI() : '/',
-                'parent'  => var_export($parent, true)
-            ]);
-            yield array($parent, '', $path, true);
+            }
+
+            /* We ended normally so we try to figure out what should be returned */
+            $invokable = is_callable($obj);
+            
+            if ($debug && $this->logger) {
+                $this->logger->debug("Terminated normally", [
+                    'handler'   => var_export($obj, true),
+                    'endpoint'  => $invokable,
+                    'previous'  => $previous,
+                    'attribute' => $current
+                ]);
+            }
+
+            list($previous, $current) = $routeIterator->current();
+            yield [$previous, $obj, $invokable];
+            return;
+
         }
 
     }
