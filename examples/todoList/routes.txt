@@ -1,0 +1,64 @@
+Method | URI                        | Controller  | Action | Response | Description
+GET      /                            Root          invoke   200        View front page of site
+
+GET      /login                       login         invoke   200        View the login page
+PUT      /login                       login         put      200        Replaces current user session with a new one
+PATCH    /login                       login         patch
+DELETE   /login                       login         delete   200        Destroys the current user session
+
+GET      /recover                     recover       invoke   200        View account recovery page
+
+GET      /recover/username            recover       __get    200        View the recovery component for username
+
+GET      /recover/password            recover       __get    200        View the recovery component for password
+PUT      /recover/password            recover       put      200        Replaces existing password with new one
+
+GET      /lists                       Lists         invoke   200        View all todo lists
+POST     /lists                       Lists         post     201        Add new list
+PUT      /lists                       Lists         put      200        Replace all lists
+PATCH    /lists                       Lists         patch    200        Modifies the list collection accordingly
+DELETE   /lists                       Lists         delete   200        Delete all lists
+
+GET      /lists/rank                  Lists         rank     200        View all lists, grouped by rank
+
+GET      /lists/{id}                  List          invoke   200        View specific list
+POST     /lists/{id}                  List          post     201        Adds a new task to list
+PUT      /lists/{id}                  List          put      200        Replace entire list
+PATCH    /lists/{id}                  List          patch    200        Modifies list accordingly
+DELETE   /lists/{id}                  List          delete   200        Deletes entire list
+
+GET      /lists/{id}/{id}             task          invoke   200        See details on a task
+POST     /lists/{id}/{id}             task          post     201        Adds a subtask
+PUT      /lists/{id}/{id}             task          put      200        Replaces entire task
+PATCH    /lists/{id}/{id}             task          patch    200        Modifies the task accordingly
+DELETE   /lists/{id}/{id}             task          delete   200        Removes task
+
+GET      /lists/{id}/{id}/{section}   taskSection   invoke   200        Retrieve specific section of task details
+POST     /lists/{id}/{id}/{section}   taskSection   post     201        Adds a new section
+PUT      /lists/{id}/{id}/{section}   taskSection   put      200        Replaces entire section
+PATCH    /lists/{id}/{id}/{section}   taskSection   patch    200        Modifies section accordingly
+DELETE   /lists/{id}/{id}/{section}   taskSection   delete   200        Removes task section
+
+GET      /users                       users         invoke   200        View all users
+
+GET      /users/{id}                  user          invoke   200        View specific user details
+PUT      /users/{id}                  user          put      200        Replaces user entirely
+PATCH    /users/{id}                  user          patch    200        Modifies user accordingly
+DELETE   /users/{id}                  user          delete   200        Removes user
+
+GET      /users/{id}/{section}        userDetails   invoke   200        Retrieve specific section of user details
+POST     /users/{id}/{section}        userDetails   post     201        Creates a new section
+PUT      /users/{id}/{section}        userDetails   put      200        Replaces section entirely
+PATCH    /users/{id}/{section}        userDetails   patch    200        Modifies section accordingly
+DELETE   /users/{id}/{section}        userDetails   delete   200        Deletes the section
+
+GET      /dashboard                   dashboard     invoke   200        View site analytics
+POST     /dashboard                   dashboard     post     201        Create a new report
+PUT      /dashboard                   dashboard     put      200        Replaces all reports on the dashboard with new ones
+PATCH    /dashboard                   dashboard     patch    200        Modifies dashboard accordingly
+DELETE   /dashboard                   dashboard     delete   200        Removes all reports from dashboard
+
+GET      /dashboard/{reportName}      report        invoke   200        View specific report
+PUT      /dashboard/{reportName}      report        put      200        Replaces specific report with new one
+PATCH    /dashboard/{reportName}      report        patch    200        Modifies report accordingly
+DELETE   /dashboard/{reportName}      report        delete   200        Removes the report
