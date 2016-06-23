@@ -51,7 +51,7 @@ Object router
 License
 =======
 
-Object Router has been released under the MIT Open Source license.
+To Do List example has been released under the MIT Open Source license.
 
 The MIT License
 ---------------
