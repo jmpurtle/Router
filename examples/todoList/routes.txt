@@ -62,3 +62,14 @@ GET      /dashboard/{reportName}      report        invoke   200        View spe
 PUT      /dashboard/{reportName}      report        put      200        Replaces specific report with new one
 PATCH    /dashboard/{reportName}      report        patch    200        Modifies report accordingly
 DELETE   /dashboard/{reportName}      report        delete   200        Removes the report
+
+*        {non-matched route}          error         status   405        Unlisted route, method not allowed
+*        {any route}                  error         status   408        Request time out
+*        {any route}                  error         status   500        Server error
+POST     {matched route}              error         status   400        Invalid syntax for this route
+PUT      {matched route}              error         status   400        Invalid syntax for this route
+PUT      {matched route}              error         status   401        This action requires authentication
+PUT      {matched route}              error         status   403        This user does not have the ability to perform this request
+PUT      {matched route}              error         status   404        Original resource cannot be found
+PUT      {matched route}              error         status   409        Original resource has been updated since last view
+
