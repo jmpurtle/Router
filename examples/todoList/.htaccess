@@ -1,0 +1,4 @@
+Options +FollowSymLinks
+Options -Indexes
+
+FallbackResource index.php
