@@ -50,3 +50,4 @@ Temporary Items
 # Examples
 examples/simpleWeb/vendor
 examples/simpleWeb/src/templateEngine/phptenjin-0.0.2/test
+examples/todoList/vendor
