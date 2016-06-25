@@ -44,9 +44,12 @@ As an administrator, I can see how many tasks each user has created and how many
 Application
 ===========
 
-Built with the Magnus Core.
-Routers:
-Object router
+Required:
+Magnus/Router/ObjectRouter
+PHPTenjin
+
+Optional components:
+PHPUnit (testing)
 
 License
 =======
